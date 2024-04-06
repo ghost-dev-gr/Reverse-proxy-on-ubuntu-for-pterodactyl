@@ -1,0 +1,55 @@
+server {
+    listen 80;
+    server_name something.com www.something.com;
+
+    # Redirect HTTP traffic to HTTPS
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name something.com www.something.com;
+
+    ssl_certificate /etc/letsencrypt/live/something.com/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/something.com/privkey.pem; # managed by Certbot
+
+    # Your existing location block for handling HTTPS traffic
+    location / {
+        proxy_pass http://12.123.12.12:1234port-number;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+Dont forget to change the domains the ip and the port + the ssl path(example) ssl_certificate_key /etc/letsencrypt/live/something.com/privkey.pem; to ssl_certificate_key /etc/letsencrypt/live/mywebsite.com/privkey.pem;
+
+Write this in the /etc/nginx/sites-available first then activate the ssl but always check if the domain is actually pointing at the correct ip-adress . Once you activate the ssl and check if the ssl was saved under  /etc/letsencrypt/live/ if it is somewhere else it wasnt activated correctly . After the ssl do sudo ln -s /etc/nginx/sites-available/something.com /etc/nginx/sites-enabled/ and then  sudo nginx -t  after the check with no errors do a restart of the ngix service sudo systemctl reload nginx and you are ready to go :) .If it is not working check the ssl using https://www.sslshopper.com/ if there is a problem it will be from  (Common name)example, something.com(Common name) test.something.com it is wrong that means that test.something.com  also needs code like this
+
+server {
+    listen 80;
+    server_name test.something.com;
+
+    # Redirect HTTP traffic to HTTPS
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name test.something.com;
+
+    ssl_certificate /etc/letsencrypt/live/test.something.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/test.something.com/privkey.pem;
+
+    # Your application configurations go here
+    # For example:
+    location / {
+        # Your application settings
+    }
+}
+
+do the same steps we said before but using this test.something.com not just something.com for any questions send e-mail to contact@devghost.xyz
