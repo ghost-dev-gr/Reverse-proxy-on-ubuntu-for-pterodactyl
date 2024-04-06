@@ -26,9 +26,13 @@ server {
         proxy_cache_bypass $http_upgrade;
     }
 }
-Dont forget to change the domains the ip and the port + the ssl path(example) ssl_certificate_key /etc/letsencrypt/live/something.com/privkey.pem; to ssl_certificate_key /etc/letsencrypt/live/mywebsite.com/privkey.pem;
+Dont forget to change the domains the ip and the port + the ssl path(example) ssl_certificate_key /etc/letsencrypt/live/something.com/privkey.pem;
+to ssl_certificate_key /etc/letsencrypt/live/mywebsite.com/privkey.pem;
 
-Write this in the /etc/nginx/sites-available first then activate the ssl but always check if the domain is actually pointing at the correct ip-adress . Once you activate the ssl and check if the ssl was saved under  /etc/letsencrypt/live/ if it is somewhere else it wasnt activated correctly . After the ssl do sudo ln -s /etc/nginx/sites-available/something.com /etc/nginx/sites-enabled/ and then  sudo nginx -t  after the check with no errors do a restart of the ngix service sudo systemctl reload nginx and you are ready to go :) .If it is not working check the ssl using https://www.sslshopper.com/ if there is a problem it will be from  (Common name)example, something.com(Common name) test.something.com it is wrong that means that test.something.com  also needs code like this
+Write this in the /etc/nginx/sites-available first then activate the ssl but always check if the domain is actually pointing at the correct ip-adress .
+Once you activate the ssl and check if the ssl was saved under  /etc/letsencrypt/live/ if it is somewhere else it wasnt activated correctly . After the ssl do sudo ln -s /etc/nginx/sites-available/something.com /etc/nginx/sites-enabled/ and then  sudo nginx -t  after the check with no errors do a restart of the ngix service sudo systemctl reload nginx and you are ready to go :) .
+If it is not working check the ssl using https://www.sslshopper.com/ if there is a problem it will be from  (Common name)example, something.com(Common name) test.something.com it is 
+wrong that means that test.something.com  also needs code like this
 
 server {
     listen 80;
